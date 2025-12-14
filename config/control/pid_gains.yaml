@@ -1,0 +1,61 @@
+# PID Controller Gains
+# Tune these based on actual system response
+
+joints:
+  joint_1:
+    kp: 100.0
+    ki: 10.0
+    kd: 20.0
+    kff_vel: 0.5
+    kff_acc: 0.01
+    integral_limit: 50.0
+    output_limit: 500.0
+
+  joint_2:
+    kp: 150.0
+    ki: 15.0
+    kd: 30.0
+    kff_vel: 0.8
+    kff_acc: 0.02
+    integral_limit: 50.0
+    output_limit: 500.0
+
+  joint_3:
+    kp: 120.0
+    ki: 12.0
+    kd: 25.0
+    kff_vel: 0.6
+    kff_acc: 0.015
+    integral_limit: 50.0
+    output_limit: 300.0
+
+  joint_4:
+    kp: 80.0
+    ki: 8.0
+    kd: 15.0
+    kff_vel: 0.3
+    kff_acc: 0.005
+    integral_limit: 30.0
+    output_limit: 200.0
+
+  joint_5:
+    kp: 80.0
+    ki: 8.0
+    kd: 15.0
+    kff_vel: 0.3
+    kff_acc: 0.005
+    integral_limit: 30.0
+    output_limit: 200.0
+
+  joint_6:
+    kp: 50.0
+    ki: 5.0
+    kd: 10.0
+    kff_vel: 0.2
+    kff_acc: 0.002
+    integral_limit: 20.0
+    output_limit: 100.0
+
+control_loop:
+  frequency_hz: 1000
+  watchdog_timeout_ms: 100

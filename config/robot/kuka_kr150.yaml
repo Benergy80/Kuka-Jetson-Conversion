@@ -1,0 +1,28 @@
+# Kuka KR150 Robot Configuration
+robot:
+  name: "Kuka KR150"
+  model: "KR150-2"
+  num_joints: 6
+
+# DH Parameters (to be calibrated from actual robot)
+dh_parameters:
+  - {a: 350, d: 750, alpha: -1.5708, theta_offset: 0}   # Joint 1
+  - {a: 1250, d: 0, alpha: 0, theta_offset: 0}          # Joint 2
+  - {a: 55, d: 0, alpha: -1.5708, theta_offset: 0}      # Joint 3
+  - {a: 0, d: 1100, alpha: 1.5708, theta_offset: 0}     # Joint 4
+  - {a: 0, d: 0, alpha: -1.5708, theta_offset: 0}       # Joint 5
+  - {a: 0, d: 230, alpha: 0, theta_offset: 0}           # Joint 6
+
+# Joint limits (radians)
+joint_limits:
+  position_min: [-3.14, -2.09, -2.18, -6.28, -2.09, -6.28]
+  position_max: [3.14, 2.09, 2.18, 6.28, 2.09, 6.28]
+  velocity_max: [1.96, 1.57, 1.96, 3.49, 3.49, 5.24]
+  acceleration_max: [8.0, 6.0, 8.0, 12.0, 12.0, 16.0]
+  torque_max: [1000, 1000, 500, 300, 300, 100]
+
+# Performance specs
+performance:
+  repeatability_mm: 0.05
+  max_reach_mm: 2700
+  payload_kg: 150

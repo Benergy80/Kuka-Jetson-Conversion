@@ -1,0 +1,54 @@
+# EtherCAT Network Configuration
+
+network:
+  interface: "eth0"
+  cycle_time_us: 1000  # 1ms = 1kHz
+
+slaves:
+  - position: 1
+    name: "Drive_Joint1"
+    type: "servo_drive"
+    vendor_id: 0x00000002
+    product_code: 0x044C2C52
+
+  - position: 2
+    name: "Drive_Joint2"
+    type: "servo_drive"
+    vendor_id: 0x00000002
+    product_code: 0x044C2C52
+
+  - position: 3
+    name: "Drive_Joint3"
+    type: "servo_drive"
+    vendor_id: 0x00000002
+    product_code: 0x044C2C52
+
+  - position: 4
+    name: "Drive_Joint4"
+    type: "servo_drive"
+    vendor_id: 0x00000002
+    product_code: 0x044C2C52
+
+  - position: 5
+    name: "Drive_Joint5"
+    type: "servo_drive"
+    vendor_id: 0x00000002
+    product_code: 0x044C2C52
+
+  - position: 6
+    name: "Drive_Joint6"
+    type: "servo_drive"
+    vendor_id: 0x00000002
+    product_code: 0x044C2C52
+
+  - position: 7
+    name: "IO_Module"
+    type: "digital_io"
+    vendor_id: 0x00000002
+    product_code: 0x07D43052
+    digital_inputs: 16
+    digital_outputs: 16
+
+distributed_clocks:
+  enabled: true
+  sync0_cycle_time_ns: 1000000
