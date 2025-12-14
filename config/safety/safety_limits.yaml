@@ -1,0 +1,44 @@
+# Safety Limits Configuration
+# ISO 13849-1 Category 3, PLd compliance
+
+safety:
+  # Response time requirements
+  estop_response_ms: 50
+  safety_monitor_cycle_ms: 1
+
+  # Joint position limits (radians) - tighter than mechanical limits
+  joint_limits:
+    position_min: [-3.0, -2.0, -2.0, -6.0, -2.0, -6.0]
+    position_max: [3.0, 2.0, 2.0, 6.0, 2.0, 6.0]
+    velocity_max: [1.8, 1.5, 1.8, 3.2, 3.2, 5.0]
+    acceleration_max: [7.0, 5.5, 7.0, 11.0, 11.0, 15.0]
+    torque_max: [900, 900, 450, 270, 270, 90]
+
+  # Workspace limits (mm)
+  workspace:
+    x_min: -2500
+    x_max: 2500
+    y_min: -2500
+    y_max: 2500
+    z_min: 0
+    z_max: 3000
+
+  # Collision zones (mm) - define keep-out areas
+  collision_zones:
+    - name: "floor"
+      type: "box"
+      min: [-3000, -3000, -100]
+      max: [3000, 3000, 0]
+    - name: "base"
+      type: "sphere"
+      center: [0, 0, 0]
+      radius: 300
+
+watchdog:
+  timeout_ms: 100
+  kick_required: true
+
+emergency_stop:
+  hardware_estop_pin: 7
+  software_estop_enabled: true
+  require_acknowledge: true
