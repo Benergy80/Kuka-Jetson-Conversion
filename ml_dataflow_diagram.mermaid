@@ -1,0 +1,150 @@
+graph TB
+    subgraph "Sensor Data Acquisition - 60Hz"
+        CAM1[Camera 1] --> IMG_PROC1[Image Processing]
+        CAM2[Camera 2] --> IMG_PROC2[Image Processing]
+        CAM3[Camera 3] --> IMG_PROC3[Image Processing]
+        DEPTH[Depth Camera] --> DEPTH_PROC[Depth Processing]
+        
+        IMG_PROC1 --> IMG_SYNC[Image Synchronization<br/>& Concatenation]
+        IMG_PROC2 --> IMG_SYNC
+        IMG_PROC3 --> IMG_SYNC
+        DEPTH_PROC --> IMG_SYNC
+        
+        ENCODERS[Joint Encoders] --> STATE_EST[State Estimator]
+        FT_SENSOR[Force/Torque] --> STATE_EST
+        TEMP[Temperature] --> STATE_EST
+        
+        STATE_EST --> ROBOT_STATE[Robot State Vector<br/>Position, Velocity, Forces]
+    end
+    
+    subgraph "Observation Processing - 60Hz"
+        IMG_SYNC --> OBS_FORM[Observation Formation]
+        ROBOT_STATE --> OBS_FORM
+        
+        OBS_FORM --> OBS[Current Observation<br/>Images + State]
+        OBS --> OBS_BUFFER[Observation Buffer<br/>Last 10 frames]
+    end
+    
+    subgraph "Mode Selection - User Input"
+        USER_CMD[User Command] --> MODE_SELECT{Mode Selector}
+        
+        MODE_SELECT -->|G-Code| GCODE_MODE[G-Code Mode]
+        MODE_SELECT -->|Autonomous| ML_MODE[ML Autonomous Mode]
+        MODE_SELECT -->|Manual| MANUAL_MODE[Manual Mode]
+        MODE_SELECT -->|E-Stop| ESTOP[Emergency Stop]
+    end
+    
+    subgraph "G-Code Path - Traditional Control"
+        GCODE_MODE --> GCODE_PARSER[G-Code Parser]
+        GCODE_FILE[G-Code File] --> GCODE_PARSER
+        
+        GCODE_PARSER --> TRAJ_GEN[Trajectory Generator]
+        TRAJ_GEN --> PATH_PLAN[Path Planner]
+        PATH_PLAN --> SETPOINT[Position Setpoint]
+    end
+    
+    subgraph "ML Autonomous Path - 100Hz"
+        ML_MODE --> ML_ACTIVE{ML Active}
+        OBS_BUFFER --> ML_ACTIVE
+        
+        ML_ACTIVE --> PREPROCESS[Preprocessing<br/>Normalization, Resizing]
+        
+        PREPROCESS --> MODEL_SEL{Model Selection}
+        
+        MODEL_SEL -->|Task 1| ACT_MODEL[ACT Transformer<br/>TensorRT Optimized]
+        MODEL_SEL -->|Task 2| DIFF_MODEL[Diffusion Policy<br/>TensorRT Optimized]
+        MODEL_SEL -->|Task 3| BC_MODEL[Behavioral Cloning<br/>TensorRT Optimized]
+        
+        ACT_MODEL --> ACTION_CHUNK[Action Chunk<br/>10 steps ahead]
+        DIFF_MODEL --> ACTION_CHUNK
+        BC_MODEL --> ACTION_STEP[Single Action Step]
+        
+        ACTION_CHUNK --> POSTPROCESS
+        ACTION_STEP --> POSTPROCESS
+        
+        POSTPROCESS[Postprocessing<br/>Denormalization] --> ML_ACTION[ML Predicted Action]
+    end
+    
+    subgraph "Action Validation & Safety - 1kHz"
+        ML_ACTION --> VALIDATOR{Action Validator}
+        SETPOINT --> MOTION_CTRL[Motion Controller]
+        
+        VALIDATOR --> CHECK_LIMITS{Check Joint Limits}
+        CHECK_LIMITS -->|OK| CHECK_VEL{Check Velocity}
+        CHECK_VEL -->|OK| CHECK_COLL{Check Collision}
+        CHECK_COLL -->|OK| CHECK_FORCE{Check Forces}
+        CHECK_FORCE -->|OK| SAFE_ACTION[Validated Action]
+        
+        CHECK_LIMITS -->|FAIL| SAFETY_STOP[Trigger Safety Stop]
+        CHECK_VEL -->|FAIL| SAFETY_STOP
+        CHECK_COLL -->|FAIL| SAFETY_STOP
+        CHECK_FORCE -->|FAIL| SAFETY_STOP
+        
+        SAFE_ACTION --> MOTION_CTRL
+        SAFETY_STOP --> ESTOP
+    end
+    
+    subgraph "Low-Level Control - 1kHz"
+        MOTION_CTRL --> IK_SOLVER[Inverse Kinematics]
+        IK_SOLVER --> JOINT_CMD[Joint Commands]
+        
+        JOINT_CMD --> PID_CTRL[PID Controllers<br/>Per Joint]
+        ROBOT_STATE --> PID_CTRL
+        
+        PID_CTRL --> FEEDFWD[Feedforward<br/>Compensation]
+        FEEDFWD --> MOTOR_CMD[Motor Commands<br/>Torque/Velocity]
+    end
+    
+    subgraph "Motor Control - 1kHz"
+        MOTOR_CMD --> ECAT_TX[EtherCAT Transmit]
+        ECAT_TX --> DRIVES[Servo Drives]
+        DRIVES --> MOTORS[Robot Motors]
+        
+        MOTORS --> ENCODERS
+        MOTORS --> FT_SENSOR
+    end
+    
+    subgraph "Data Logging & Learning - Background"
+        OBS --> LOGGER[Data Logger]
+        ML_ACTION --> LOGGER
+        SAFE_ACTION --> LOGGER
+        ROBOT_STATE --> LOGGER
+        
+        LOGGER --> DATASET[Dataset Storage<br/>HDF5/Parquet]
+        
+        USER_CORRECTION[Human Correction<br/>Teleoperation Override] --> LOGGER
+        
+        DATASET --> ONLINE_TRAIN[Online Learning<br/>Periodic Fine-tuning]
+        ONLINE_TRAIN --> MODEL_UPDATE[Model Update]
+        MODEL_UPDATE -.->|Hot Swap| ACT_MODEL
+        MODEL_UPDATE -.->|Hot Swap| DIFF_MODEL
+        MODEL_UPDATE -.->|Hot Swap| BC_MODEL
+    end
+    
+    subgraph "Performance Monitoring - 10Hz"
+        ROBOT_STATE --> METRICS[Metrics Calculator]
+        SAFE_ACTION --> METRICS
+        
+        METRICS --> TRACK_ERROR[Tracking Error]
+        METRICS --> EXEC_TIME[Execution Time]
+        METRICS --> ENERGY[Energy Consumption]
+        METRICS --> SUCCESS_RATE[Task Success Rate]
+        
+        TRACK_ERROR --> DASHBOARD[Performance Dashboard]
+        EXEC_TIME --> DASHBOARD
+        ENERGY --> DASHBOARD
+        SUCCESS_RATE --> DASHBOARD
+    end
+    
+    style ML_MODE fill:#FF69B4,stroke:#333,stroke-width:3px
+    style ACT_MODEL fill:#9370DB,stroke:#333,stroke-width:3px
+    style DIFF_MODEL fill:#9370DB,stroke:#333,stroke-width:3px
+    style BC_MODEL fill:#9370DB,stroke:#333,stroke-width:3px
+    
+    style VALIDATOR fill:#FFD700,stroke:#333,stroke-width:3px
+    style SAFETY_STOP fill:#FF4444,stroke:#333,stroke-width:3px
+    style ESTOP fill:#FF0000,stroke:#333,stroke-width:4px
+    
+    style MOTORS fill:#90EE90,stroke:#333,stroke-width:2px
+    style DATASET fill:#87CEEB,stroke:#333,stroke-width:2px
+    style DASHBOARD fill:#DDA0DD,stroke:#333,stroke-width:2px

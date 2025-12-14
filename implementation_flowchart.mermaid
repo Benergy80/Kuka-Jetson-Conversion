@@ -1,0 +1,154 @@
+graph TD
+    Start([Start Project]) --> Phase1{Phase 1:<br/>LeRobot PoC}
+    
+    Phase1 --> P1_1[Assemble Follower Arm]
+    P1_1 --> P1_2[Install Sensors & Cameras]
+    P1_2 --> P1_3[Setup Jetson Dev Environment]
+    P1_3 --> P1_4[Implement Data Collection]
+    P1_4 --> P1_5[Collect 100+ Demonstrations]
+    P1_5 --> P1_6[Train Baseline ML Models]
+    P1_6 --> P1_Check{PoC<br/>Successful?}
+    
+    P1_Check -->|No| P1_Debug[Debug & Iterate]
+    P1_Debug --> P1_4
+    P1_Check -->|Yes| Phase2{Phase 2:<br/>System Analysis}
+    
+    Phase2 --> P2_1[Document Mechanical System]
+    P2_1 --> P2_2[Document Electrical System]
+    P2_2 --> P2_3[Extract Software Parameters]
+    P2_3 --> P2_4[Measure Performance Baseline]
+    P2_4 --> P2_5[Create Requirements Spec]
+    P2_5 --> P2_Check{Documentation<br/>Complete?}
+    
+    P2_Check -->|No| P2_Missing[Identify Missing Info]
+    P2_Missing --> P2_1
+    P2_Check -->|Yes| Phase3{Phase 3:<br/>Hardware Design}
+    
+    Phase3 --> P3_1[Select Motor Drivers]
+    P3_1 --> P3_2[Design Interface Electronics]
+    P3_2 --> P3_3[Design Safety Systems]
+    P3_3 --> P3_4[Integrate Additional Sensors]
+    P3_4 --> P3_5[Prototype & Test Hardware]
+    P3_5 --> P3_Check{Hardware<br/>Validated?}
+    
+    P3_Check -->|No| P3_Fix[Fix Hardware Issues]
+    P3_Fix --> P3_5
+    P3_Check -->|Yes| Phase4{Phase 4:<br/>Software Dev}
+    
+    Phase4 --> P4_1[Configure RT-Linux]
+    P4_1 --> P4_2[Implement Control Loops]
+    P4_2 --> P4_3[Implement Kinematics]
+    P4_3 --> P4_4[Implement G-Code Parser]
+    P4_4 --> P4_5[Integrate ML Inference]
+    P4_5 --> P4_6[Design Mode Switching]
+    P4_6 --> P4_Check{Software<br/>Functional?}
+    
+    P4_Check -->|No| P4_Debug[Debug Software]
+    P4_Debug --> P4_2
+    P4_Check -->|Yes| Phase5{Phase 5:<br/>ML Development}
+    
+    Phase5 --> P5_1[Create Digital Twin]
+    P5_1 --> P5_2[Generate Synthetic Data]
+    P5_2 --> P5_3[Collect Real Demonstrations]
+    P5_3 --> P5_4[Train Advanced Models]
+    P5_4 --> P5_5[Optimize for Jetson]
+    P5_5 --> P5_6[Validate Sim-to-Real Transfer]
+    P5_6 --> P5_Check{Models<br/>Performing?}
+    
+    P5_Check -->|No| P5_Retrain[Collect More Data]
+    P5_Retrain --> P5_3
+    P5_Check -->|Yes| Phase6{Phase 6:<br/>Integration}
+    
+    Phase6 --> P6_1[Benchtop Testing]
+    P6_1 --> P6_1_Check{Pass?}
+    P6_1_Check -->|No| P6_1_Fix[Fix Components]
+    P6_1_Fix --> P6_1
+    
+    P6_1_Check -->|Yes| P6_2[Single-Axis Testing]
+    P6_2 --> P6_2_Check{Pass?}
+    P6_2_Check -->|No| P6_2_Fix[Calibrate Axis]
+    P6_2_Fix --> P6_2
+    
+    P6_2_Check -->|Yes| P6_3[Multi-Axis Coordination]
+    P6_3 --> P6_3_Check{Pass?}
+    P6_3_Check -->|No| P6_3_Fix[Fix Kinematics]
+    P6_3_Fix --> P6_3
+    
+    P6_3_Check -->|Yes| P6_4[Full System Integration]
+    P6_4 --> P6_5[Test G-Code Execution]
+    P6_5 --> P6_6[Test ML Autonomous Mode]
+    P6_6 --> P6_7[Test Mode Switching]
+    P6_7 --> P6_8[Endurance Testing 8hrs]
+    P6_8 --> P6_Check{Performance<br/>Acceptable?}
+    
+    P6_Check -->|No| P6_Optimize[Optimize System]
+    P6_Optimize --> P6_4
+    P6_Check -->|Yes| Phase7{Phase 7:<br/>Deployment}
+    
+    Phase7 --> P7_1[Create Documentation]
+    P7_1 --> P7_2[Train Operators]
+    P7_2 --> P7_3[Pilot Production Run]
+    P7_3 --> P7_Check{Production<br/>Ready?}
+    
+    P7_Check -->|No| P7_Adjust[Address Issues]
+    P7_Adjust --> P7_3
+    P7_Check -->|Yes| P7_4[Full Production Deployment]
+    
+    P7_4 --> P7_5[Monitor Performance]
+    P7_5 --> P7_6[Collect User Feedback]
+    P7_6 --> P7_7[Continuous Improvement]
+    P7_7 --> Complete([Project Complete])
+    
+    %% Add safety checkpoint that runs in parallel
+    Phase1 -.->|Safety Check| SafetyGate1{Safety<br/>Review}
+    Phase2 -.->|Safety Check| SafetyGate2{Safety<br/>Review}
+    Phase3 -.->|Safety Check| SafetyGate3{Safety<br/>Review}
+    Phase4 -.->|Safety Check| SafetyGate4{Safety<br/>Review}
+    Phase5 -.->|Safety Check| SafetyGate5{Safety<br/>Review}
+    Phase6 -.->|Safety Check| SafetyGate6{Safety<br/>Review}
+    
+    SafetyGate1 -->|Issues| SafetyFix1[Address Safety]
+    SafetyGate2 -->|Issues| SafetyFix2[Address Safety]
+    SafetyGate3 -->|Issues| SafetyFix3[Address Safety]
+    SafetyGate4 -->|Issues| SafetyFix4[Address Safety]
+    SafetyGate5 -->|Issues| SafetyFix5[Address Safety]
+    SafetyGate6 -->|Issues| SafetyFix6[Address Safety]
+    
+    SafetyFix1 --> Phase1
+    SafetyFix2 --> Phase2
+    SafetyFix3 --> Phase3
+    SafetyFix4 --> Phase4
+    SafetyFix5 --> Phase5
+    SafetyFix6 --> Phase6
+    
+    SafetyGate1 -->|OK| Phase2
+    SafetyGate2 -->|OK| Phase3
+    SafetyGate3 -->|OK| Phase4
+    SafetyGate4 -->|OK| Phase5
+    SafetyGate5 -->|OK| Phase6
+    SafetyGate6 -->|OK| Phase7
+    
+    style Start fill:#90EE90,stroke:#333,stroke-width:3px
+    style Complete fill:#90EE90,stroke:#333,stroke-width:3px
+    style Phase1 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Phase2 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Phase3 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Phase4 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Phase5 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Phase6 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    style Phase7 fill:#FFE4B5,stroke:#333,stroke-width:2px
+    
+    style P1_Check fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style P2_Check fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style P3_Check fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style P4_Check fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style P5_Check fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style P6_Check fill:#ADD8E6,stroke:#333,stroke-width:2px
+    style P7_Check fill:#ADD8E6,stroke:#333,stroke-width:2px
+    
+    style SafetyGate1 fill:#FFB6C1,stroke:#333,stroke-width:2px
+    style SafetyGate2 fill:#FFB6C1,stroke:#333,stroke-width:2px
+    style SafetyGate3 fill:#FFB6C1,stroke:#333,stroke-width:2px
+    style SafetyGate4 fill:#FFB6C1,stroke:#333,stroke-width:2px
+    style SafetyGate5 fill:#FFB6C1,stroke:#333,stroke-width:2px
+    style SafetyGate6 fill:#FFB6C1,stroke:#333,stroke-width:2px

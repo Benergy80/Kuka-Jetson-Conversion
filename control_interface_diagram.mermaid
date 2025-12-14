@@ -1,0 +1,165 @@
+graph LR
+    subgraph "Jetson Orin Nano Super Controller"
+        CPU[8-Core ARM CPU<br/>Real-Time Linux]
+        GPU[1024 CUDA Cores<br/>TensorRT Inference]
+        MEM[8GB RAM]
+        ENET[Gigabit Ethernet<br/>EtherCAT Master]
+        GPIO_BUS[GPIO Pins]
+        USB_BUS[USB 3.0 Ports]
+        
+        CPU --> ENET
+        CPU --> GPIO_BUS
+        CPU --> USB_BUS
+        GPU --> MEM
+        CPU --> GPU
+    end
+    
+    subgraph "Communication Layer"
+        ENET --> ECAT[EtherCAT Network<br/>1kHz Cycle Time]
+        GPIO_BUS --> GPIO_EXP[GPIO Expander<br/>MCP23017]
+        USB_BUS --> USB_CAM[USB Cameras]
+        USB_BUS --> USB_HMI[USB HMI Display]
+    end
+    
+    subgraph "Motor Drives - EtherCAT Slaves"
+        ECAT --> DRIVE1[Axis 1 Servo Drive<br/>Position/Velocity/Torque Mode]
+        ECAT --> DRIVE2[Axis 2 Servo Drive]
+        ECAT --> DRIVE3[Axis 3 Servo Drive]
+        ECAT --> DRIVE4[Axis 4 Servo Drive]
+        ECAT --> DRIVE5[Axis 5 Servo Drive]
+        ECAT --> DRIVE6[Turning Bed Drive]
+        ECAT --> SPINDLE_CTRL[Spindle Controller<br/>VFD]
+    end
+    
+    subgraph "Motors & Encoders"
+        DRIVE1 <--> MTR1[Motor 1<br/>Brushless Servo]
+        DRIVE2 <--> MTR2[Motor 2<br/>Brushless Servo]
+        DRIVE3 <--> MTR3[Motor 3<br/>Brushless Servo]
+        DRIVE4 <--> MTR4[Motor 4<br/>Brushless Servo]
+        DRIVE5 <--> MTR5[Motor 5<br/>Brushless Servo]
+        DRIVE6 <--> MTR6[Turning Bed Motor]
+        SPINDLE_CTRL <--> SPINDLE[Spindle Motor<br/>AC Induction]
+        
+        MTR1 --> ENC1[Absolute Encoder<br/>23-bit]
+        MTR2 --> ENC2[Absolute Encoder]
+        MTR3 --> ENC3[Absolute Encoder]
+        MTR4 --> ENC4[Absolute Encoder]
+        MTR5 --> ENC5[Absolute Encoder]
+        MTR6 --> ENC6[Absolute Encoder]
+        
+        ENC1 -.-> DRIVE1
+        ENC2 -.-> DRIVE2
+        ENC3 -.-> DRIVE3
+        ENC4 -.-> DRIVE4
+        ENC5 -.-> DRIVE5
+        ENC6 -.-> DRIVE6
+    end
+    
+    subgraph "Digital I/O via GPIO"
+        GPIO_EXP --> DI_ESTOP[Emergency Stop Input]
+        GPIO_EXP --> DI_LIMITS[Hardware Limit Switches]
+        GPIO_EXP --> DI_DOORS[Safety Door Interlocks]
+        GPIO_EXP --> DI_SENSORS[Proximity Sensors]
+        
+        GPIO_EXP --> DO_ENABLE[Drive Enable Outputs]
+        GPIO_EXP --> DO_BRAKE[Brake Release Outputs]
+        GPIO_EXP --> DO_COOLANT[Coolant Pump Control]
+        GPIO_EXP --> DO_LIGHT[Work Light Control]
+    end
+    
+    subgraph "Analog I/O via EtherCAT I/O Module"
+        ECAT --> IO_MODULE[EtherCAT I/O Terminal<br/>Beckhoff EL3xxx/EL4xxx]
+        IO_MODULE --> AI_FT[Force/Torque Sensors<br/>6-Axis Analog Input]
+        IO_MODULE --> AI_TEMP[Temperature Sensors]
+        IO_MODULE --> AO_SPINDLE[Spindle Speed Analog<br/>0-10V]
+    end
+    
+    subgraph "Vision System"
+        USB_CAM --> CAM1[Camera 1: Workspace<br/>1920x1080 @ 60fps]
+        USB_CAM --> CAM2[Camera 2: Tool View<br/>1920x1080 @ 60fps]
+        USB_CAM --> CAM3[Camera 3: Side View<br/>1920x1080 @ 60fps]
+        
+        USB_BUS --> CSI[CSI Camera Interface]
+        CSI --> DEPTH_CAM[Intel RealSense D435<br/>RGB-D Camera]
+    end
+    
+    subgraph "Safety System - Hardware Independent"
+        SAFETY_RELAY1[Safety Relay 1<br/>Category 3]
+        SAFETY_RELAY2[Safety Relay 2<br/>Category 3]
+        WATCHDOG[Hardware Watchdog<br/>MAX6369]
+        
+        DI_ESTOP --> SAFETY_RELAY1
+        SAFETY_RELAY1 --> SAFETY_RELAY2
+        GPIO_EXP --> WATCHDOG
+        WATCHDOG --> SAFETY_RELAY2
+        SAFETY_RELAY2 --> STO[Safe Torque Off<br/>All Drives]
+        
+        STO -.-> DRIVE1
+        STO -.-> DRIVE2
+        STO -.-> DRIVE3
+        STO -.-> DRIVE4
+        STO -.-> DRIVE5
+        STO -.-> DRIVE6
+    end
+    
+    subgraph "Power Distribution"
+        AC_IN[AC Mains<br/>230V Single Phase]
+        AC_IN --> PS_48V[48V 20A Supply<br/>Motor Bus]
+        AC_IN --> PS_24V[24V 5A Supply<br/>Control Power]
+        PS_24V --> PS_5V[5V Regulator<br/>Jetson Power]
+        
+        PS_48V --> DRIVE1
+        PS_48V --> DRIVE2
+        PS_48V --> DRIVE3
+        PS_48V --> DRIVE4
+        PS_48V --> DRIVE5
+        PS_48V --> DRIVE6
+        PS_48V --> SPINDLE_CTRL
+        
+        PS_24V --> GPIO_EXP
+        PS_24V --> SAFETY_RELAY1
+        PS_24V --> SAFETY_RELAY2
+        
+        PS_5V --> CPU
+    end
+    
+    subgraph "Original Kuka Interfaces - Preserved"
+        KUKA_MOTOR[Original Motor Connectors<br/>Phoenix Contact]
+        KUKA_ENCODER[Original Encoder Cables<br/>D-Sub 15]
+        KUKA_IO[Original I/O Panel<br/>Terminal Blocks]
+        
+        KUKA_MOTOR -.->|Reused| MTR1
+        KUKA_MOTOR -.->|Reused| MTR2
+        KUKA_MOTOR -.->|Reused| MTR3
+        KUKA_MOTOR -.->|Reused| MTR4
+        KUKA_MOTOR -.->|Reused| MTR5
+        KUKA_MOTOR -.->|Reused| MTR6
+        
+        KUKA_ENCODER -.->|Reused| ENC1
+        KUKA_ENCODER -.->|Reused| ENC2
+        KUKA_ENCODER -.->|Reused| ENC3
+        KUKA_ENCODER -.->|Reused| ENC4
+        KUKA_ENCODER -.->|Reused| ENC5
+        KUKA_ENCODER -.->|Reused| ENC6
+    end
+    
+    style CPU fill:#FFD700,stroke:#333,stroke-width:3px
+    style GPU fill:#FF69B4,stroke:#333,stroke-width:3px
+    style ECAT fill:#87CEEB,stroke:#333,stroke-width:3px
+    
+    style SAFETY_RELAY1 fill:#FF6B6B,stroke:#333,stroke-width:3px
+    style SAFETY_RELAY2 fill:#FF6B6B,stroke:#333,stroke-width:3px
+    style WATCHDOG fill:#FF6B6B,stroke:#333,stroke-width:3px
+    style STO fill:#FF4444,stroke:#333,stroke-width:3px
+    
+    style MTR1 fill:#90EE90,stroke:#333,stroke-width:2px
+    style MTR2 fill:#90EE90,stroke:#333,stroke-width:2px
+    style MTR3 fill:#90EE90,stroke:#333,stroke-width:2px
+    style MTR4 fill:#90EE90,stroke:#333,stroke-width:2px
+    style MTR5 fill:#90EE90,stroke:#333,stroke-width:2px
+    style MTR6 fill:#90EE90,stroke:#333,stroke-width:2px
+    
+    style CAM1 fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style CAM2 fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style CAM3 fill:#DDA0DD,stroke:#333,stroke-width:2px
+    style DEPTH_CAM fill:#DA70D6,stroke:#333,stroke-width:2px

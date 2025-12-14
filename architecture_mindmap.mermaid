@@ -1,0 +1,145 @@
+graph TB
+    Start[Kuka ML Controller System] --> Hardware[Hardware Layer]
+    Start --> Software[Software Layer]
+    Start --> ML[Machine Learning Layer]
+    Start --> Safety[Safety Layer]
+    
+    Hardware --> Motors[Motor System]
+    Hardware --> Sensors[Sensor System]
+    Hardware --> Computing[Computing Platform]
+    Hardware --> Power[Power System]
+    Hardware --> Communication[Communication System]
+    
+    Motors --> M1[Axis 1-5 Motors]
+    Motors --> M2[Turning Bed Motor]
+    Motors --> M3[Spindle Motor]
+    Motors --> Drivers[Motor Drivers]
+    Drivers --> D1[EtherCAT Servo Drives]
+    Drivers --> D2[Drive Controllers]
+    
+    Sensors --> Vision[Vision Sensors]
+    Sensors --> Proprioceptive[Proprioceptive Sensors]
+    Sensors --> Force[Force/Torque Sensors]
+    Sensors --> Environmental[Environmental Sensors]
+    
+    Vision --> V1[RGB Cameras x3-5]
+    Vision --> V2[Depth Cameras]
+    Vision --> V3[Camera Calibration]
+    
+    Proprioceptive --> P1[Joint Encoders]
+    Proprioceptive --> P2[Absolute Encoders]
+    Proprioceptive --> P3[Position Feedback]
+    
+    Force --> F1[6-Axis F/T Sensors]
+    Force --> F2[Current Sensing]
+    Force --> F3[Tactile Feedback]
+    
+    Computing --> C1[Jetson Orin Nano Super]
+    Computing --> C2[8-core ARM CPU]
+    Computing --> C3[GPU: 1024 CUDA cores]
+    Computing --> C4[8GB RAM]
+    Computing --> C5[NVMe Storage]
+    
+    Power --> PW1[Main Power: 48V DC Bus]
+    Power --> PW2[Control Power: 24V]
+    Power --> PW3[Logic Power: 5V/3.3V]
+    Power --> PW4[Emergency Power Backup]
+    
+    Communication --> COM1[EtherCAT Network]
+    Communication --> COM2[Ethernet]
+    Communication --> COM3[USB Interfaces]
+    Communication --> COM4[GPIO]
+    
+    Software --> RTOS[Real-Time OS]
+    Software --> Control[Control System]
+    Software --> Planning[Motion Planning]
+    Software --> Interface[User Interface]
+    
+    RTOS --> RT1[Linux PREEMPT_RT]
+    RTOS --> RT2[Dedicated CPU Cores]
+    RTOS --> RT3[Memory Locking]
+    RTOS --> RT4[Priority Scheduling]
+    
+    Control --> CT1[Control Loops: 1-10kHz]
+    Control --> CT2[PID Controllers]
+    Control --> CT3[Feedforward Control]
+    Control --> CT4[State Estimation]
+    
+    Planning --> PL1[Trajectory Generation]
+    Planning --> PL2[Path Planning]
+    Planning --> PL3[Collision Avoidance]
+    Planning --> PL4[Kinematics Solver]
+    
+    PL4 --> K1[Forward Kinematics]
+    PL4 --> K2[Inverse Kinematics]
+    PL4 --> K3[Jacobian Computation]
+    
+    Interface --> UI1[G-Code Interpreter]
+    Interface --> UI2[Mode Selector]
+    Interface --> UI3[HMI Display]
+    Interface --> UI4[Teleoperation]
+    
+    UI2 --> MODE1[G-Code Mode]
+    UI2 --> MODE2[ML Autonomous Mode]
+    UI2 --> MODE3[Manual Mode]
+    
+    ML --> Models[ML Models]
+    ML --> Training[Training Pipeline]
+    ML --> Inference[Inference Engine]
+    ML --> Data[Data Management]
+    
+    Models --> MOD1[Behavioral Cloning]
+    Models --> MOD2[ACT Transformer]
+    Models --> MOD3[Diffusion Policy]
+    Models --> MOD4[Online Learning]
+    
+    Training --> TR1[Data Collection]
+    Training --> TR2[Simulation]
+    Training --> TR3[Model Training]
+    Training --> TR4[Validation]
+    
+    TR2 --> SIM1[Digital Twin: Isaac/Gazebo]
+    TR2 --> SIM2[Domain Randomization]
+    TR2 --> SIM3[Sim-to-Real Transfer]
+    
+    Inference --> INF1[TensorRT Optimization]
+    Inference --> INF2[Model Serving]
+    Inference --> INF3[Latency <10ms]
+    Inference --> INF4[Multi-Model Support]
+    
+    Data --> DAT1[Demonstration Storage]
+    Data --> DAT2[Performance Logging]
+    Data --> DAT3[Dataset Versioning]
+    Data --> DAT4[Continuous Collection]
+    
+    Safety --> Hardware_Safety[Hardware Safety]
+    Safety --> Software_Safety[Software Safety]
+    Safety --> Validation[Safety Validation]
+    
+    Hardware_Safety --> HS1[Emergency Stop Circuit]
+    Hardware_Safety --> HS2[Hardware Watchdog]
+    Hardware_Safety --> HS3[Safe Torque Off]
+    Hardware_Safety --> HS4[Redundant Safety Relays]
+    
+    Software_Safety --> SS1[Joint Limit Checking]
+    Software_Safety --> SS2[Velocity Limiting]
+    Software_Safety --> SS3[Collision Detection]
+    Software_Safety --> SS4[ML Output Validation]
+    Software_Safety --> SS5[Fault Recovery]
+    
+    Validation --> VAL1[ISO 13849 Compliance]
+    Validation --> VAL2[Risk Assessment]
+    Validation --> VAL3[Testing Protocols]
+    Validation --> VAL4[Certification]
+    
+    style Start fill:#f9f,stroke:#333,stroke-width:4px
+    style Hardware fill:#bbf,stroke:#333,stroke-width:2px
+    style Software fill:#bfb,stroke:#333,stroke-width:2px
+    style ML fill:#fbf,stroke:#333,stroke-width:2px
+    style Safety fill:#fbb,stroke:#333,stroke-width:2px
+    
+    style C1 fill:#ff9,stroke:#333,stroke-width:2px
+    style MODE2 fill:#9f9,stroke:#333,stroke-width:2px
+    style MOD2 fill:#f9f,stroke:#333,stroke-width:2px
+    style INF1 fill:#9ff,stroke:#333,stroke-width:2px
+    style HS1 fill:#f99,stroke:#333,stroke-width:2px
