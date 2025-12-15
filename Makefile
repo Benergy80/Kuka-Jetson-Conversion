@@ -11,19 +11,19 @@ install-dev:
 
 # Run all tests
 test:
-	pytest tests/ -v --cov=src --cov-report=term-missing
+	python3 -m pytest tests/ -v --cov=src --cov-report=term-missing
 
 # Run unit tests only
 test-unit:
-	pytest tests/unit/ -v
+	python3 -m pytest tests/unit/ -v
 
 # Run integration tests only
 test-integration:
-	pytest tests/integration/ -v
+	python3 -m pytest tests/integration/ -v
 
 # Run safety tests
 test-safety:
-	pytest tests/unit/test_safety.py tests/integration/test_safety_system.py -v
+	python3 -m pytest tests/unit/test_safety.py tests/integration/test_safety_system.py -v
 
 # Lint code
 lint:
